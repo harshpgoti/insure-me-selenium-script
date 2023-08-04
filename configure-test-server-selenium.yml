@@ -1,0 +1,37 @@
+---
+- hosts: test-server
+  become: true
+  tasks:
+  - name: update apt
+    command: sudo apt-get update
+  - name: Install required packages
+    apt:
+      name: 
+        - openjdk-11-jre
+        - chromium-chromedriver
+        # - unzip
+      state: present
+
+  - name: Create the directory
+    file:
+      path: /home/ubuntu/insure-me-selenium-script
+      state: directory
+      owner: ubuntu
+      group: ubuntu
+      mode: '0755'
+    tags: [selenium]
+
+  - name: Clone the Selenium project repository
+    git:
+      repo: https://github.com/harshpgoti/insure-me-selenium-script.git
+      dest: /home/ubuntu/insure-me-selenium-script
+      version: master
+    register: git_clone_result
+
+  - name: Ensure the cloned directory exists
+    fail:
+      msg: "Failed to clone the repository"
+    when: git_clone_result.failed
+
+  - name: Run the Java command
+    command: java -jar /home/ubuntu/insure-me-selenium-script/insure-me-selenium-script.jar
