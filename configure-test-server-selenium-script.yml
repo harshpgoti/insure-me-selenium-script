@@ -9,7 +9,6 @@
       name: 
         - openjdk-11-jre
         - chromium-chromedriver
-        # - unzip
       state: present
 
   - name: Create the directory
